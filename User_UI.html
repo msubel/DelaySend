@@ -223,23 +223,23 @@
         }
     </script>
     <head>
-        <title>GmailScheduler</title>       
+        <title>Delay Send</title>       
 
     </head>
     <body onload="init();" style="width:800px">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     
     <div id="container" style="padding:10px;">
-        <h1>Gmail Scheduler</h1>
+        <h1>Delay Send</h1>
 
         <div id="status" style='background-color:yellow'><h3>Loading..</h3></div>
 
         <form id="prefs_form" style="display:none">
             <p class="bg-primary" style="line-height:2">You are logged in as <span id="loggedinUserEmail">...</span> and your timezone is set as <span id="loggedinUserTimezone">...</span> - <a href="#changeTimezone" style="color:white;">Change</a></p>
             <fieldset>
-                <legend><strong>Introduction to Gmail Scheduler</strong></legend>
-                <div>Gmail Scheduler, is a secure & flexible system which allows you to schedule outgoing messages and set messages to come back to your inbox as required.</div>
-                <p><a target="_blank" href="https://www.youtube.com/watch?v=4kfpQVZjFd8">View an introduction video on youtube</a></p>
+                <legend><strong>Introduction to Delay Send</strong></legend>
+                <div>Delay Send, is a secure & flexible system which allows you to schedule message drafts to send later.</div>
+                <p>Warning: You may only schedule one message per thread! </p>
            </fieldset>
             <fieldset >
                 <legend><strong>Manage Timer Labels</strong></legend>
@@ -303,6 +303,7 @@
                 <option value="Pacific/Auckland"  >(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
           </select><br/>
                 </div>
+                <!--
                 <div>Move automatically sent messages to inbox. (Use this if you want confirmation that your scheduled email has been sent)<br/>
                 <input type="radio" name="move_sent_messages_inbox" id="move_sent_messages_inbox_true" value=true>Yes, move sent messages to my inbox after they are sent</input><br/>
                  <input type="radio" name="move_sent_messages_inbox" id="move_sent_messages_inbox_false" value=false>No, leave them in the sent folder only</input>
@@ -315,10 +316,7 @@
                 <input type="radio" name="nolabel_drafs_to_inbox" id="nolabel_drafs_to_inbox_true" value=true>Yes, bring all drafts to my inbox</input><br/>
                 <input type="radio" name="nolabel_drafs_to_inbox" id="nolabel_drafs_to_inbox_false" value=false>No</input>
                 </div><br/>
-                <div>{BETA} Send me a text message when a message is set with label SMS<br/>
-                <input type="radio" name="send_message_sms" id="send_message_sms_true" value=true>Yes, send me a text message when emails are labelled with SMS</input><br/>
-                <input type="radio" name="send_message_sms" id="send_message_sms_false" value=false>No, I will try this later</input>
-                </div><br/>
+                -->
             </fieldset>
             <button class="btn btn-primary" type='button' onclick='if (validate()) savePrefsForm()'>Save Settings</button>
         </form>

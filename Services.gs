@@ -69,6 +69,8 @@ function serviceGetUserLabelByName(labelName){
   return GmailApp.getUserLabelByName(labelName);
 }
 
+/*
+//I don't think these two are necessary.
 function serviceRemoveLabelFromThread(thread, label) {
   var gmail_label_object = executeCommand(function(){return GmailApp.getUserLabelByName(label);}) // can use serviceGetUserLabels() instead
   executeCommand(function(){thread.removeLabel(gmail_label_object)});
@@ -80,6 +82,7 @@ function serviceSendEmailMessage(to, subject, body, htmlBody, cc, bcc, from, att
       GmailApp.sendEmail(to, subject, body, {htmlBody: htmlBody, cc: cc, bcc: bcc, from: from, attachments: attach, name: name} );
     });
 }
+*/
 
 function serviceGetUserLabels() {
   return GmailApp.getUserLabels();
@@ -98,15 +101,15 @@ function serviceGetThreadMessages(thread) {
 
 // -- PROPERTIES SERVICE --
 function serviceSaveProperty(key, value) {
-  UserProperties.setProperties(key, value);
+  userProps.setProperty(key,value);
 }
 
 function serviceGetProperties() {
-  return UserProperties.getProperties();
+  return userProps.getProperties();
 }
 
 function serviceClearProperties() {
-  UserProperties.deleteAllProperties();
+  UserProps.deleteAllProperties();
 }
 
 // -- SCRIPT SERVICES --

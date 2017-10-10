@@ -11,19 +11,6 @@ function createTriggers() {
       .timeBased()
       .everyMinutes(1)
       .create();
-  
-  var draftsTrigger = ScriptApp.newTrigger("moveDraftsToInbox")
-      .timeBased()
-      .everyMinutes(1)
-      .create();
-  
-  /* 
-  //COMMENTING OUT SMS TRIGGER WITH USER REPORTED ISSUES OF GMAIL LIMITS #31
-   var smsTrigger = ScriptApp.newTrigger("processSms")
-      .timeBased()
-      .everyMinutes(1)
-      .create();
-      */
 }
 
 function deleteTriggers() { 
@@ -58,6 +45,7 @@ function processTimer() {
    
     // Get threads in "pages" of 100 at a time
     while(!page || page.length == 100) {
+      Utilities.sleep(1000);
       page = timerChildLabelObject.getThreads(0, 100);
       if (page.length > 0) {
         createLabel(queueChildLabel);
@@ -101,36 +89,59 @@ function processQueue(){
       var queueChildLabel = SCHEDULER_LABEL+'/'+SCHEDULER_QUEUE_LABEL+'/'+queueChildLabels[i];
       var queueChildLabelObject =  serviceGetUserLabelByName(queueChildLabel);
       var threads = queueChildLabelObject.getThreads();
-    
+    var message;
+    var draftId;
     //Remove queue child label if nothing to process
     if(threads.length==0){
       deleteLabel(queueChildLabel);
     }
    
      for (var x in threads) { 
-
        var thread = threads[x];
-       var message = GmailApp.getMessageById(threads[x].getMessages()[0].getId());
-       if(message.isDraft()){
-           dispatchDraft(threads[x].getMessages()[0].getId());
-         
-         //move sent message to inbox
-         if(userPrefs['move_sent_messages_inbox']){    
-
-            var sentMessage = GmailApp.search('To:'+message.getTo()+' label:sent subject:'+message.getSubject()+'')[0];            
-            sentMessage.removeLabel(queueLabelObject);
-            sentMessage.removeLabel(queueChildLabelObject);
-            sentMessage.moveToInbox();
-            
+       var y=0;
+       for (y=0; y<thread.getMessageCount(); y++)
+       {
+         if( GmailApp.getMessageById(threads[x].getMessages()[y].getId()).isDraft() ){
+            message = GmailApp.getMessageById(threads[x].getMessages()[y].getId());
+            //Logger.log(y+"-------------------\n");
+            //Logger.log("MessageIsDraft:"+message.getId());
+            //Logger.log(y+"\n-------------------.");         
          }
-         
+       }
+
+      try{
+        message.isDraft();
+      
+      }catch (e){
+        message = GmailApp.getMessageById(threads[x].getMessages()[0].getId());
+      
+      }
+       
+        var draftsList = GmailApp.getDrafts();
+        for (var i = 0; i < draftsList.length; i++) {
+             if(message.getId() == draftsList[i].getMessageId())
+             {
+               draftId=draftsList[i].getId();
+             }
+        }
+
+       //Logger.log("MessageIsDraft:"+message.isDraft()+"\nMessageBody:"+message.getPlainBody());
+       //Logger.log("\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+       //  return;
+       
+       if(message.isDraft()){
+           forwardDraft(draftId);
+           //Logger.log("\nUSED forwardDraftFunction");
+           //Logger.log("\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+           thread.removeLabel(queueLabelObject);
+           thread.removeLabel(queueChildLabelObject);
+
        }else{
-            thread.removeLabel(queueLabelObject);
-            thread.removeLabel(queueChildLabelObject);
-            GmailApp.moveThreadToInbox(threads[x]);
-            
+           thread.removeLabel(queueLabelObject);
+           thread.removeLabel(queueChildLabelObject);
           if(userPrefs['mark_sent_messages_inbox_unread']){
             GmailApp.markMessageUnread(message);
+            //Logger.log("IF mark sent messages inbox unread");
           }
             
        }
@@ -138,48 +149,3 @@ function processQueue(){
     
   }
 }
-
-
-function moveDraftsToInbox() {
-  var userPrefs = getUserPrefs(false);
-  
-  if(!userPrefs['nolabel_drafs_to_inbox']){
-    return;
-  }
-  
-  var drafts = GmailApp.getDraftMessages();
-  
- for (var i = 0; i < drafts.length; i++) {  
-   
-   if(drafts[i].getSubject().match(/inbox0/)){
-     //BONUS: If draft emails have subject inbox0 in them, then do not return those to inbox.
-   }else{     
-     //Move to these drafts to inbox    
-       drafts[i].getThread().moveToInbox();     
-   } 
-   
- }
-  
-}
-
-function processSms(){
-   var userPrefs = getUserPrefs(false);
-  
-  if(!userPrefs['send_message_sms']){
-    return;
-  }
-  
-  var smsLabel = SCHEDULER_LABEL+'/'+SCHEDULER_EXTRAS_LABEL+'/'+SCHEDULER_SMS_LABEL;
-  var smsLabelObject = serviceGetUserLabelByName(smsLabel);
-  var smsLabelThreads = smsLabelObject.getThreads();
-  var now = new Date().getTime();
-  for(i in smsLabelThreads){
-    CalendarApp.createEvent('IMP- '+smsLabelThreads[0].getFirstMessageSubject(),
-                            new Date(now+60000),
-                            new Date(now+60000));
-    CalendarApp.createEvent('IMP- '+smsLabelThreads[0].getFirstMessageSubject(), new Date(now+60000),new Date(now+60000)).addSmsReminder(0);        
-  }
-  smsLabelObject.removeFromThreads(smsLabelThreads);
-}
-
-
