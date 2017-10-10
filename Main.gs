@@ -6,7 +6,7 @@ function setupStaticLabels() {
 }
 
 function sendWelcomeEmail(){
-  var userPrefs = getUserPrefs(false);
+  var userPrefs = userProps.getProperties();
  
   var body = 'Hi there,';
      body += '<p>Thanks for trying out the DelaySend. This is a free, secure, private (data is held only within your gmail account & your google app script) and convenient method to schedule outgoing messages and return messages to your inbox.</p>';
@@ -22,7 +22,7 @@ function sendWelcomeEmail(){
  if(!userPrefs['email_welcome_sent']){
       GmailApp.sendEmail(getActiveUserEmail(), EMAIL_WELCOME_SUBJECT, body, options);
       userPrefs['email_welcome_sent'] = true;
-      serviceSaveProperty(userPrefs,true);
+      serviceSaveProperty('email_welcome_sent',true);
    
  }
 
