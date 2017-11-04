@@ -1,5 +1,5 @@
 function getTimeZoneString() {
-  var userPrefs =getUserPrefs();
+  var userPrefs = getUserPrefs();
   var timezone_string = userPrefs['localzone'];
   
   debug('User timezone:' + timezone_string);
